@@ -102,5 +102,14 @@
       }
     }
   },
-  "dependencies": {}
+  "dependencies": {
+    "@fastify/cors": "^11.2.0",
+    "@fastify/mongodb": "^9.0.2",
+    "fastify": "^5.6.2",
+    "youtube-transcript": "^1.2.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "20.19.9"
+  }
 }
