@@ -1,0 +1,24 @@
+# Production Dockerfile - Minimal size and performance focused
+
+# 1. Builder Stage (To install node_modules)
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+# Install ONLY production dependencies (smaller image)
+RUN npm install -g pnpm && pnpm install --prod --frozen-lockfile
+
+# 2. Final Production Stage
+FROM node:20-alpine AS prod-runner
+WORKDIR /app
+# Copy only production dependencies
+COPY --from=builder /app/node_modules ./node_modules
+# Copy the already-built (compiled) JS application files from the root's dist folder
+# IMPORTANT: The build command is run BEFORE docker compose up --build
+COPY dist/apps/api ./dist/main.js
+
+EXPOSE 3333
+
+ENV NODE_ENV production
+
+# Start the compiled JavaScript entry file
+CMD ["node", "dist/main.js"]

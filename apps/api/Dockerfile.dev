@@ -1,0 +1,22 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# install pnpm
+RUN npm install -g pnpm
+
+COPY pnpm-workspace.yaml .
+COPY pnpm-lock.yaml .
+COPY package.json .
+COPY ./apps/api/package.json ./apps/api/package.json
+
+# Install deps
+RUN pnpm install --frozen-lockfile
+
+# Now copy the entire repo
+COPY . .
+
+EXPOSE 3333 9229
+
+#CMD ["pnpm", "run", "--filter", "api", "dev"]
+CMD ["pnpm", "--filter", "api", "dev"]
