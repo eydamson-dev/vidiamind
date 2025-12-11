@@ -1,6 +1,6 @@
 services:
   api:
-    container_name: ai-video-api-dev
+    container_name: vidiamind-api-dev 
     build:
       context: .
       dockerfile: apps/api/Dockerfile.dev
@@ -15,7 +15,7 @@ services:
     depends_on:
       - mongo
   web:
-    container_name: ai-video-web-dev
+    container_name: vidiamind-web-dev
     build:
       context: .
       dockerfile: ./apps/web/Dockerfile.dev
@@ -27,7 +27,7 @@ services:
       - api
 
   mongo:
-    container_name: ai-video-mongo-dev
+    container_name: vidiamind-mongo-dev
     image: mongo:6.0
     ports:
       - "27017:27017"
