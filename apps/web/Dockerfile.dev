@@ -3,8 +3,10 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Install pnpm (required for running pnpm install)
 RUN npm install -g pnpm
 
+# Install dependencies for the whole workspace
 COPY pnpm-workspace.yaml .
 COPY pnpm-lock.yaml .
 COPY package.json .
@@ -19,5 +21,4 @@ COPY . .
 EXPOSE 5173
 
 # CMD to run the development server via pnpm workspace filtering
-# The 'dev' script is defined in apps/web/package.json
 CMD ["pnpm", "--filter", "web", "dev"]
