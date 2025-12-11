@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "start": "pnpm run --parallel start",
+    "dev": "pnpm run --parallel dev",
     "build": "pnpm run --recursive build"
   },
   "private": true,

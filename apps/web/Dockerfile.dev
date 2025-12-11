@@ -1,0 +1,23 @@
+# apps/web/Dockerfile.dev
+FROM node:20-alpine 
+
+WORKDIR /app
+
+RUN npm install -g pnpm
+
+COPY pnpm-workspace.yaml .
+COPY pnpm-lock.yaml .
+COPY package.json .
+COPY ./apps/web/package.json ./apps/web/package.json
+
+RUN pnpm install --frozen-lockfile
+
+# Copy the entire source code
+COPY . .
+
+# Vite default dev port
+EXPOSE 5173
+
+# CMD to run the development server via pnpm workspace filtering
+# The 'dev' script is defined in apps/web/package.json
+CMD ["pnpm", "--filter", "web", "dev"]
