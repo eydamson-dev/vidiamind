@@ -1,0 +1,12 @@
+{
+  "name": "@vidiamind/rag",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "dependencies": {
+    "@llamaindex/deepseek": "latest",
+    "@llamaindex/mongodb": "^0.1.0",
+    "@llamaindex/openai": "latest",
+    "llamaindex": "latest",
+    "mongodb": "^6.0.0"
+  }
+}

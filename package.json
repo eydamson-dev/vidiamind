@@ -8,7 +8,12 @@
     "build": "pnpm run --recursive build"
   },
   "private": true,
-  "dependencies": {},
+  "dependencies": {
+    "@llamaindex/deepseek": "^0.0.40",
+    "@llamaindex/mongodb": "^0.1.0",
+    "@llamaindex/openai": "^0.4.22",
+    "llamaindex": "^0.12.1"
+  },
   "devDependencies": {
     "@types/node": "20.19.9",
     "ts-node": "10.9.1",

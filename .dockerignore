@@ -56,16 +56,6 @@ dist
 apps/*/dist
 libs/*/dist
 
-# 3. Docker files themselves
-Dockerfile
-Dockerfile.*
-docker-compose.yml # (or .yaml)
-
-# 4. Monorepo/Package Manager Specific Files
-# pnpm-lock.yaml is copied explicitly in the multi-stage build, 
-# so you don't typically ignore it here unless you have a reason.
-.pnpm-store
-
 # 5. Git and Editor/IDE Files
 .git
 .gitignore
