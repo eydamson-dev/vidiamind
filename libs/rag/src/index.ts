@@ -1,86 +1,83 @@
-import {
-  VectorStoreIndex,
-  storageContextFromDefaults,
-  Document,
-  Settings,
-} from 'llamaindex';
+// libs/rag/src/index.ts
 
-import { MongoDBAtlasVectorSearch } from '@llamaindex/mongodb';
-import { DeepSeekLLM } from '@llamaindex/deepseek';
-import { OpenAIEmbedding } from '@llamaindex/openai';
-import { MongoClient } from 'mongodb';
+import * as llamaindex from 'llamaindex';
+
+const { Settings } = llamaindex;
+
+import { OpenAI } from '@llamaindex/openai';
+import { Collection, MongoClient } from 'mongodb';
 
 /**
  * VidiaMindRAG handles the heavy lifting of video knowledge extraction.
  */
 export class VidiaMindRAG {
-  private vectorStore: MongoDBAtlasVectorSearch;
+  private collection: Collection;
 
   constructor(
     mongoClient: MongoClient,
     dbName: string,
     collectionName: string,
   ) {
-    // 1. Initialize DeepSeek as the primary intelligence (LLM)
-    Settings.llm = new DeepSeekLLM({
-      model: 'deepseek-chat', // or "deepseek-reasoner" for R1
-      apiKey: process.env.DEEPSEEK_API_KEY,
+
+    Settings.llm = new OpenAI({
+      baseURL: process.env.OPENAI_BASE_URL,
+      apiKey: process.env.OPENROUTER_API_KEY,
+      model: process.env.OPENROUTER_MODEL,
     });
 
-    // 2. Initialize OpenAI for Embeddings
-    Settings.embedModel = new OpenAIEmbedding({
-      model: 'text-embedding-3-small',
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-
-    // 3. Configure MongoDB Vector Store
-    this.vectorStore = new MongoDBAtlasVectorSearch({
-      mongodbClient: mongoClient,
-      dbName: dbName,
-      collectionName: collectionName,
-      indexName: 'vector_index',
-    });
+    const db = mongoClient.db(dbName);
+    this.collection = db.collection(collectionName);
   }
 
   /**
    * Ingests a transcript into the vector database.
    */
   async ingestTranscript(videoId: string, transcript: string) {
-    const document = new Document({
+    const chunk = {
       text: transcript,
-      metadata: { videoId, timestamp: new Date().toISOString() },
-    });
+      videoId,
+      timestamp: new Date().toISOString(),
+    };
 
-    const storageContext = await storageContextFromDefaults({
-      vectorStore: this.vectorStore,
-    });
+    // Use the native insertOne method
+    await this.collection.insertOne(chunk);
 
-    // Indexes the document (automatically chunks and embeds)
-    await VectorStoreIndex.fromDocuments([document], { storageContext });
-
-    return { success: true, videoId };
+    return {
+      success: true,
+      videoId,
+      note: 'Indexed via standard MongoDB Text Search.',
+    };
   }
 
   /**
    * Queries the knowledge base for a specific video.
    */
   async ask(videoId: string, question: string) {
-    const index = await VectorStoreIndex.fromVectorStore(this.vectorStore);
-
-    const queryEngine = index.asQueryEngine({
-      preFilters: {
-        filters: [
-          {
-            key: 'videoId', // Matches the key in Document metadata
-            value: videoId,
-            operator: '==', // You can also use FilterOperator.EQ
-          },
-        ],
+    const filter = {
+      $text: {
+        $search: question,
       },
-      similarityTopK: 3,
+      videoId: videoId,
+    };
+
+    const projection = {
+      _id: 0,
+      text: 1,
+      score: { $meta: 'textScore' },
+    };
+
+    const retrievedDocs = await this.collection
+      .find(filter, { projection }) // Pass the filter and the projection as an option object
+      .sort({ score: { $meta: 'textScore' } }) // Sort by the calculated score field
+      .limit(3) // Limit results to the top 3
+      .toArray(); // Execute the query and return the array
+
+    const context = retrievedDocs.map((doc) => doc.text).join('\n---\n');
+    const prompt = `Based ONLY on the following context, answer the user's question. Context: ${context}\n\nQuestion: ${question}`;
+    const response = await Settings.llm!.chat({
+      messages: [{ role: 'user', content: prompt }],
     });
 
-    const response = await queryEngine.query({ query: question });
-    return response.toString();
+    return response.message.content;
   }
 }

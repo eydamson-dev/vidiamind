@@ -12,6 +12,7 @@
     "@llamaindex/deepseek": "^0.0.40",
     "@llamaindex/mongodb": "^0.1.0",
     "@llamaindex/openai": "^0.4.22",
+    "https-proxy-agent": "^7.0.6",
     "llamaindex": "^0.12.1"
   },
   "devDependencies": {
