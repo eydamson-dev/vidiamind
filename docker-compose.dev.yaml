@@ -31,10 +31,14 @@ services:
   mongo:
     container_name: vidiamind-mongo-dev
     image: mongodb/mongodb-atlas-local
+    hostname: mongo
+    env_file:
+      - ./.env.dev
     ports:
       - "27017:27017"
     volumes:
       - mongo-dev-data:/data/db
+      - mongo-dev-config:/data/configdb
 
   ollama:
     container_name: vidiamind-ollama
@@ -75,4 +79,5 @@ services:
 
 volumes:
   mongo-dev-data:
+  mongo-dev-config:
   ollama-data:
