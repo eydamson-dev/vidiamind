@@ -14,6 +14,8 @@ services:
       - "9229:9229"
     depends_on:
       - mongo
+      - ollama
+
   web:
     container_name: vidiamind-web-dev
     build:
@@ -28,11 +30,49 @@ services:
 
   mongo:
     container_name: vidiamind-mongo-dev
-    image: mongo:8.2.2
+    image: mongodb/mongodb-atlas-local
     ports:
       - "27017:27017"
     volumes:
       - mongo-dev-data:/data/db
 
+  ollama:
+    container_name: vidiamind-ollama
+    image: ollama/ollama:rocm
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: ["gpu"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:11434/api/tags || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Helper service to automate the model pulls
+  ollama-puller:
+    image: curlimages/curl:latest
+    container_name: vidiamind-ollama-puller
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: /bin/sh
+    command:
+      - "-c"
+      - |
+        echo "Pulling llama3.1..."
+        curl -X POST http://ollama:11434/api/pull -d '{"name": "llama3.1"}'
+        echo "Pulling nomic-embed-text..."
+        curl -X POST http://ollama:11434/api/pull -d '{"name": "nomic-embed-text"}'
+        echo "Models ready!"
+
 volumes:
   mongo-dev-data:
+  ollama-data:

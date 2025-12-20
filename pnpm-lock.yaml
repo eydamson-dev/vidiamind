@@ -14,6 +14,9 @@ importers:
       '@llamaindex/mongodb':
         specifier: ^0.1.0
         version: 0.1.0(@llamaindex/core@0.6.22)(@llamaindex/env@0.1.30)
+      '@llamaindex/ollama':
+        specifier: ^0.1.23
+        version: 0.1.23(@llamaindex/core@0.6.22)(@llamaindex/env@0.1.30)
       '@llamaindex/openai':
         specifier: ^0.4.22
         version: 0.4.22(@llamaindex/core@0.6.22)(@llamaindex/env@0.1.30)(ws@8.18.3)(zod@4.1.13)
@@ -181,6 +184,9 @@ importers:
       '@llamaindex/mongodb':
         specifier: ^0.1.0
         version: 0.1.0(@llamaindex/core@0.6.22)(@llamaindex/env@0.1.30)
+      '@llamaindex/ollama':
+        specifier: ^0.1.23
+        version: 0.1.23(@llamaindex/core@0.6.22)(@llamaindex/env@0.1.30)
       '@llamaindex/openai':
         specifier: latest
         version: 0.4.22(@llamaindex/core@0.6.22)(@llamaindex/env@0.1.30)(ws@8.18.3)(zod@3.25.76)
@@ -800,6 +806,12 @@ packages:
       '@llamaindex/env': 0.1.30
       tree-sitter: ^0.22.0
       web-tree-sitter: ^0.24.3
+
+  '@llamaindex/ollama@0.1.23':
+    resolution: {integrity: sha512-Tk5TnnPhjBnedWrJA1TCdhC/aJAJscAw/FDQG89fa/7m9p53XviI14K0a0cYLYxqVqDUh9J/KI/JYmYwYjhPmg==}
+    peerDependencies:
+      '@llamaindex/core': 0.6.22
+      '@llamaindex/env': 0.1.30
 
   '@llamaindex/openai@0.4.22':
     resolution: {integrity: sha512-jVaSscK7kyBM0wj3vceG2HPnFreSuOvkBYGFovFdS1heCyahlGDoQ1cLAUWqQ/J9Njfrt/PZTp3ICP+APl+zig==}
@@ -2453,6 +2465,9 @@ packages:
   ohash@2.0.11:
     resolution: {integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==}
 
+  ollama@0.5.18:
+    resolution: {integrity: sha512-lTFqTf9bo7Cd3hpF6CviBe/DEhewjoZYd9N/uCe7O20qYTvGqrNOFOBDj3lbZgFWHUgDv5EeyusYxsZSLS8nvg==}
+
   on-exit-leak-free@2.1.2:
     resolution: {integrity: sha512-0eJJY6hXLGf1udHwfNftBqH+g73EU4B504nZeKpz1sYRKafAghwxEJunB2O7rDZkL4PGfsMVnTXZ2EjibbqcsA==}
     engines: {node: '>=14.0.0'}
@@ -2583,6 +2598,9 @@ packages:
   recast@0.23.11:
     resolution: {integrity: sha512-YTUo+Flmw4ZXiWfQKGcwwc11KnoRAYgzAE2E7mXKCjSviTKShtxBsN6YUUBB2gtaBzKzeKunxhUwNHQuRryhWA==}
     engines: {node: '>= 4'}
+
+  remeda@2.32.0:
+    resolution: {integrity: sha512-BZx9DsT4FAgXDTOdgJIc5eY6ECIXMwtlSPQoPglF20ycSWigttDDe88AozEsPPT4OWk5NujroGSBC1phw5uU+w==}
 
   require-from-string@2.0.2:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
@@ -2825,6 +2843,10 @@ packages:
   tw-animate-css@1.4.0:
     resolution: {integrity: sha512-7bziOlRqH0hJx80h/3mbicLW7o8qLsH5+RaLR2t+OHM3D0JlWGODQKQ4cxbK7WlvmUxpcj6Kgu6EKqjrGFe3QQ==}
 
+  type-fest@4.41.0:
+    resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
+    engines: {node: '>=16'}
+
   typescript@5.9.3:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
@@ -3055,6 +3077,9 @@ packages:
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
+
+  whatwg-fetch@3.6.20:
+    resolution: {integrity: sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==}
 
   whatwg-mimetype@4.0.0:
     resolution: {integrity: sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==}
@@ -3683,6 +3708,13 @@ snapshots:
       html-to-text: 9.0.5
       tree-sitter: 0.22.4
       web-tree-sitter: 0.24.7
+
+  '@llamaindex/ollama@0.1.23(@llamaindex/core@0.6.22)(@llamaindex/env@0.1.30)':
+    dependencies:
+      '@llamaindex/core': 0.6.22
+      '@llamaindex/env': 0.1.30
+      ollama: 0.5.18
+      remeda: 2.32.0
 
   '@llamaindex/openai@0.4.22(@llamaindex/core@0.6.22)(@llamaindex/env@0.1.30)(ws@8.18.3)(zod@3.25.76)':
     dependencies:
@@ -5388,6 +5420,10 @@ snapshots:
 
   ohash@2.0.11: {}
 
+  ollama@0.5.18:
+    dependencies:
+      whatwg-fetch: 3.6.20
+
   on-exit-leak-free@2.1.2: {}
 
   openai@5.23.2(ws@8.18.3)(zod@3.25.76):
@@ -5543,6 +5579,10 @@ snapshots:
       source-map: 0.6.1
       tiny-invariant: 1.3.3
       tslib: 2.8.1
+
+  remeda@2.32.0:
+    dependencies:
+      type-fest: 4.41.0
 
   require-from-string@2.0.2: {}
 
@@ -5755,6 +5795,8 @@ snapshots:
 
   tw-animate-css@1.4.0: {}
 
+  type-fest@4.41.0: {}
+
   typescript@5.9.3: {}
 
   ufo@1.6.1: {}
@@ -5907,6 +5949,8 @@ snapshots:
   whatwg-encoding@3.1.1:
     dependencies:
       iconv-lite: 0.6.3
+
+  whatwg-fetch@3.6.20: {}
 
   whatwg-mimetype@4.0.0: {}
 

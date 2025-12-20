@@ -18,5 +18,4 @@ COPY . .
 
 EXPOSE 3333 9229
 
-#CMD ["pnpm", "run", "--filter", "api", "dev"]
 CMD ["pnpm", "--filter", "api", "dev"]
