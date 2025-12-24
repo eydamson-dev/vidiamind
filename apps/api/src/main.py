@@ -1,4 +1,6 @@
-from logging import log
+# apps/api/src/main.py
+
+import logging
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,6 +10,8 @@ from youtube_transcript_api.formatters import TextFormatter
 
 from src.core.config import settings
 from src.rag.engine import VidiaMindRAG
+
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(title="VidiaMind API", version="1.0.0")
 
@@ -45,11 +49,12 @@ async def process_video(req: VideoRequest):
     try:
         ytt_api = YouTubeTranscriptApi()
         transcript_data = ytt_api.fetch(video_id)
+        logging.info({'transcript_data':transcript_data})
         
         # Use the built-in TextFormatter to turn the list into a clean paragraph
         formatter = TextFormatter()
         full_text = formatter.format_transcript(transcript_data)
-        log(1, full_text)
+        logging.info({'full_text': full_text})
         
         # Pass the processed text to your RAG engine
         # This will index it into the vector DB and generate a summary

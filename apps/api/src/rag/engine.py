@@ -1,5 +1,8 @@
+# apps/api/src/rag/engine.py
+
 import os
-from llama_index.core import VectorStoreIndex, Document, Settings, StorageContext
+from llama_index.core import SummaryIndex, VectorStoreIndex, Document, Settings, StorageContext
+from llama_index.core.base.embeddings.base import similarity
 from llama_index.core.chat_engine.types import ChatMode
 from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
 from llama_index.storage.chat_store.mongo import MongoChatStore
@@ -24,7 +27,7 @@ class VidiaMindRAG:
             self.client,
             db_name=self.db_name,
             collection_name="video_vectors",
-            vector_index_name="vector_index"
+            vector_index_name="video_index"
         )
         
         # 2. Chat Persistence Setup
@@ -40,10 +43,12 @@ class VidiaMindRAG:
         storage_context = StorageContext.from_defaults(vector_store=self.vector_store)
         
         # Generate the vector index
-        index = VectorStoreIndex.from_documents([doc], storage_context=storage_context)
+        _ = VectorStoreIndex.from_documents([doc], storage_context=storage_context)
+
+        summary_index = SummaryIndex.from_documents([doc])
+        query_engine = summary_index.as_query_engine(response_mode="simple_summarize")
         
         # Generate initial summary
-        query_engine = index.as_query_engine()
         summary = str(query_engine.query("Summarize this video in 3 sentences."))
         
         # Prime the conversation history with the summary
