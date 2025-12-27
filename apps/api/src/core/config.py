@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     
     # 4. API Keys (Defaults to None if not provided)
     OPENROUTER_API_KEY: str | None = None
+    OPEN_ROUTER_MODEL: str = "tngtech/deepseek-r1t2-chimera:free"
     
     model_config = SettingsConfigDict(
         env_file=os.path.join(BASE_DIR, ".env.dev"),

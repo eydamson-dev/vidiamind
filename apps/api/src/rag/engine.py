@@ -1,21 +1,27 @@
 # apps/api/src/rag/engine.py
 
 import os
+import logging
 from llama_index.core import SummaryIndex, VectorStoreIndex, Document, Settings, StorageContext
 from llama_index.core.base.embeddings.base import similarity
 from llama_index.core.chat_engine.types import ChatMode
+from llama_index.core.node_parser import SentenceSplitter
 from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
 from llama_index.storage.chat_store.mongo import MongoChatStore
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.llms.ollama import Ollama
 from llama_index.embeddings.ollama import OllamaEmbedding
 from pymongo import MongoClient
+from llama_index.core.base.llms.types import ChatMessage, MessageRole
+from llama_index.llms.openrouter import OpenRouter
+logging.basicConfig(level=logging.INFO)
 
 class VidiaMindRAG:
     def __init__(self):
         # Hardware Configuration (Ollama on 1660 Super)
         ollama_host = os.getenv("OLLAMA_HOST", "http://ollama:11434")
-        Settings.llm = Ollama(model="llama3.1", base_url=ollama_host, request_timeout=120.0)
+        #Settings.llm = Ollama(model="llama3.1", base_url=ollama_host, request_timeout=600.0)
+        Settings.llm = OpenRouter(model=os.getenv('OPEN_ROUTER_MODEL', 'tngtech/deepseek-r1t2-chimera:free'), api_key=os.getenv('OPENROUTER_API_KEY'))
         Settings.embed_model = OllamaEmbedding(model_name="nomic-embed-text", base_url=ollama_host)
 
         # Database Connection
@@ -37,24 +43,30 @@ class VidiaMindRAG:
             collection_name="chat_history"
         )
 
-    async def ingest_transcript(self, video_id: str, transcript: str) -> str:
+        self.splitter = SentenceSplitter(chunk_size=512, chunk_overlap=50)
+
+    async def ingest_transcript(self, video_id: str, transcript: str) -> None:
         # Save transcript with metadata for filtering
         doc = Document(text=transcript, metadata={"video_id": video_id})
+        nodes = self.splitter.get_nodes_from_documents([doc])
+
         storage_context = StorageContext.from_defaults(vector_store=self.vector_store)
         
         # Generate the vector index
-        _ = VectorStoreIndex.from_documents([doc], storage_context=storage_context)
+        _ = VectorStoreIndex(nodes, storage_context=storage_context)
 
-        summary_index = SummaryIndex.from_documents([doc])
-        query_engine = summary_index.as_query_engine(response_mode="simple_summarize")
-        
+    async def generate_summary(self, video_id: str, transcript: str) -> str:
+        """Tree based summarization. Safe for long transcripts"""
+        doc = Document(text=transcript,metadata={"video_id": video_id})
+        nodes = self.splitter.get_nodes_from_documents([doc])
+        summary_index = SummaryIndex(nodes)
+        query_engine = summary_index.as_query_engine(response_mode="tree_summarize")
+        logging.info({'full_text': transcript})
         # Generate initial summary
         summary = str(query_engine.query("Summarize this video in 3 sentences."))
+        logging.info('\nGenerated summary is ', summary)
         
-        # Prime the conversation history with the summary
-        from llama_index.core.base.llms.types import ChatMessage, MessageRole
-        
-        initial_msg = ChatMessage(role=MessageRole.ASSISTANT, content=f"**Summary:** {summary}")
+        initial_msg = ChatMessage(role=MessageRole.ASSISTANT, content=f"**Summary:**\n{summary}")
         self.chat_store.set_messages(video_id, [initial_msg])
         
         return summary
