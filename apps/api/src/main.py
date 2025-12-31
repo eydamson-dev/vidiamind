@@ -2,7 +2,7 @@
 
 import logging
 import uvicorn
-from fastapi import BackgroundTasks, FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
@@ -40,7 +40,7 @@ def health_check():
     return {"status": "healthy", "model": settings.LLM_MODEL}
 
 @app.post("/api/process-video")
-async def process_video(req: VideoRequest, background_task: BackgroundTasks):
+async def process_video(req: VideoRequest):
     video_id = extract_video_id(req.url)
     
     if not video_id:
@@ -49,19 +49,19 @@ async def process_video(req: VideoRequest, background_task: BackgroundTasks):
     try:
         ytt_api = YouTubeTranscriptApi()
         transcript_data = ytt_api.fetch(video_id)
-        logging.info({'transcript_data':transcript_data})
-        
+
         # Use the built-in TextFormatter to turn the list into a clean paragraph
         formatter = TextFormatter()
         full_text = formatter.format_transcript(transcript_data)
         
         await rag.ingest_transcript(video_id, full_text)
 
-        background_task.add_task(rag.generate_summary, video_id, full_text)
+        # background_task.add_task(rag.generate_summary, video_id, full_text)
+        summary = await rag.generate_summary(video_id, full_text)
         
         return {
             "videoId": video_id,
-            "summary": "processing",
+            "summary": summary,
             "status": "success"
         }
 
