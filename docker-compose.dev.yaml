@@ -1,6 +1,6 @@
 services:
   api:
-    container_name: vidiamind-api-dev 
+    container_name: vidiamind-api-dev
     build:
       context: .
       dockerfile: apps/api/Dockerfile.dev
@@ -43,7 +43,7 @@ services:
 
   ollama:
     container_name: vidiamind-ollama
-    image: ollama/ollama:rocm
+    image: ollama/ollama:latest
     ports:
       - "11434:11434"
     volumes:
@@ -55,6 +55,8 @@ services:
             - driver: nvidia
               count: all
               capabilities: ["gpu"]
+    environment:
+      - OLLAMA_NUM_PARALLEL=1
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:11434/api/tags || exit 1"]
       interval: 10s
