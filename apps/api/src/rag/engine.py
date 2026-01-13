@@ -21,6 +21,7 @@ from llama_index.llms.ollama import Ollama
 from llama_index.storage.chat_store.mongo import MongoChatStore
 from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
 from pymongo import MongoClient
+from src.core.config import settings
 
 logging.basicConfig(level=logging.INFO)
 
@@ -28,10 +29,9 @@ QUERY_STRING = "Your are an ai chat assistant. You will provide a detailed summa
 
 class VidiaMindRAG:
     def __init__(self):
-        # Hardware Configuration (Ollama on 1660 Super)
-        ollama_host = os.getenv("OLLAMA_HOST", "http://ollama:11434")
+        ollama_host = settings.OLLAMA_HOST
         Settings.llm = Ollama(
-            model="llama3.2",
+            model=settings.LLM_MODEL,
             base_url=ollama_host,
             request_timeout=600.0,
             context_window=8192,
@@ -40,12 +40,12 @@ class VidiaMindRAG:
         #     model=settings.OPENROUTER_MODEL, api_key=settings.OPENROUTER_API_KEY
         # )
         Settings.embed_model = OllamaEmbedding(
-            model_name="nomic-embed-text", base_url=ollama_host
+            model_name=settings.EMBED_MODEL, base_url=ollama_host
         )
 
         # Database Connection
-        self.client = MongoClient(os.getenv("MONGODB_URI"))
-        self.db_name = os.getenv("DB_NAME", "vidiamind")
+        self.client = MongoClient(settings.MONGODB_URI)
+        self.db_name = settings.DB_NAME
 
         # 1. Vector Store Setup
         self.vector_store = MongoDBAtlasVectorSearch(

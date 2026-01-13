@@ -57,6 +57,8 @@ services:
               capabilities: ["gpu"]
     environment:
       - OLLAMA_NUM_PARALLEL=1
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:11434/api/tags || exit 1"]
       interval: 10s
@@ -74,8 +76,8 @@ services:
     command:
       - "-c"
       - |
-        echo "Pulling llama3.1..."
-        curl -X POST http://ollama:11434/api/pull -d '{"name": "llama3.1"}'
+        echo "Pulling llama3.2..."
+        curl -X POST http://ollama:11434/api/pull -d '{"name": "llama3.2"}'
         echo "Pulling nomic-embed-text..."
         curl -X POST http://ollama:11434/api/pull -d '{"name": "nomic-embed-text"}'
         echo "Models ready!"
